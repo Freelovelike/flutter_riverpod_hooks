@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'wallet_provider.dart';
+import 'package:flutter_riverpod_hooks/features/wallet/providers/wallet_provider.dart';
 
 class WalletManagementPage extends ConsumerWidget {
   const WalletManagementPage({super.key});

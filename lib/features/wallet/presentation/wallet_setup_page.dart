@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'wallet_provider.dart';
-import 'wallet_service.dart';
+import 'package:flutter_riverpod_hooks/features/wallet/providers/wallet_provider.dart';
+import 'package:flutter_riverpod_hooks/features/wallet/services/wallet_service.dart';
 
 enum SetupStep { home, setPassword, backupMnemonic, importMnemonic }
 

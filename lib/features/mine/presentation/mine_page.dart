@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'auth_provider.dart';
+import 'package:flutter_riverpod_hooks/features/auth/providers/auth_provider.dart';
 
 class MinePage extends ConsumerWidget {
   const MinePage({super.key});

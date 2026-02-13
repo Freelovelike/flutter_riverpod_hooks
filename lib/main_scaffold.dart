@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'common_header.dart';
-import 'home_page.dart';
-import 'assets_page.dart';
-import 'mine_page.dart';
-import 'wallet_management_page.dart';
+import 'package:flutter_riverpod_hooks/shared/widgets/common_header.dart';
+import 'package:flutter_riverpod_hooks/features/home/presentation/home_page.dart';
+import 'package:flutter_riverpod_hooks/features/assets/presentation/assets_page.dart';
+import 'package:flutter_riverpod_hooks/features/mine/presentation/mine_page.dart';
+import 'package:flutter_riverpod_hooks/features/wallet/presentation/wallet_management_page.dart';
+import 'package:flutter_riverpod_hooks/l10n/app_localizations.dart';
 
 class MainScaffold extends HookConsumerWidget {
   const MainScaffold({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final selectedIndex = useState(0);
 
     final pages = [
       const HomePage(),
       const AssetsPage(),
       const WalletManagementPage(),
-      const MinePage(),
+      const MinePage(), 
     ];
 
     return Scaffold(
@@ -32,26 +34,26 @@ class MainScaffold extends HookConsumerWidget {
         selectedFontSize: 12,
         unselectedFontSize: 12,
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: '首页',
+            icon: const Icon(Icons.home_outlined),
+            activeIcon: const Icon(Icons.home),
+            label: l10n.home,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet_outlined),
-            activeIcon: Icon(Icons.account_balance_wallet),
-            label: '资产',
+            icon: const Icon(Icons.account_balance_wallet_outlined),
+            activeIcon: const Icon(Icons.account_balance_wallet),
+            label: l10n.assets,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings_outlined),
-            activeIcon: Icon(Icons.settings),
-            label: '钱包管理',
+            icon: const Icon(Icons.settings_outlined),
+            activeIcon: const Icon(Icons.settings),
+            label: l10n.walletManagement,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: '我的',
+            icon: const Icon(Icons.person_outline),
+            activeIcon: const Icon(Icons.person),
+            label: l10n.mine,
           ),
         ],
       ),

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod_hooks/l10n/app_localizations.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:oktoast/oktoast.dart';
-import 'auth_provider.dart';
-import 'auth_page.dart';
-import 'router.dart';
+import 'package:flutter_riverpod_hooks/core/router/router.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -26,6 +27,8 @@ class MyApp extends ConsumerWidget {
           fontFamily: 'Montserrat', // Using common font for DEX apps
         ),
         routerConfig: router,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
       ),
     );
   }

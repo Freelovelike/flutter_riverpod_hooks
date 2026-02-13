@@ -1,8 +1,8 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'todo_models.dart';
-import 'network_client.dart';
+import 'package:flutter_riverpod_hooks/features/todo/providers/todo_models.dart';
+import 'package:flutter_riverpod_hooks/core/network/network_client.dart';
 
 part 'auth_provider.g.dart';
 

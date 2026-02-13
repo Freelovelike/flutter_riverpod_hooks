@@ -1,7 +1,7 @@
 import 'package:oktoast/oktoast.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'todo_models.dart';
-import 'network_client.dart';
+import 'package:flutter_riverpod_hooks/features/todo/providers/todo_models.dart';
+import 'package:flutter_riverpod_hooks/core/network/network_client.dart';
 
 part 'todo_provider.g.dart';
 

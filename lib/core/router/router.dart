@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'main_scaffold.dart';
-import 'auth_page.dart';
-import 'transfer_page.dart';
-import 'auth_provider.dart';
-import 'wallet_provider.dart';
-import 'wallet_setup_page.dart';
-import 'wallet_management_page.dart';
+import 'package:flutter_riverpod_hooks/main_scaffold.dart';
+import 'package:flutter_riverpod_hooks/features/auth/presentation/auth_page.dart';
+import 'package:flutter_riverpod_hooks/features/assets/presentation/transfer_page.dart';
+import 'package:flutter_riverpod_hooks/features/auth/providers/auth_provider.dart';
+import 'package:flutter_riverpod_hooks/features/wallet/providers/wallet_provider.dart';
+import 'package:flutter_riverpod_hooks/features/wallet/presentation/wallet_setup_page.dart';
+import 'package:flutter_riverpod_hooks/features/wallet/presentation/wallet_management_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);

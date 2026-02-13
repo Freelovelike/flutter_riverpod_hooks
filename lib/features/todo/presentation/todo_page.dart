@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'todo_models.dart';
-import 'todo_provider.dart';
+import 'package:flutter_riverpod_hooks/features/todo/providers/todo_models.dart';
+import 'package:flutter_riverpod_hooks/features/todo/providers/todo_provider.dart';
 
 class TodoPage extends HookConsumerWidget {
   const TodoPage({super.key});

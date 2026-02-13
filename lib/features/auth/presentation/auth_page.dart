@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:oktoast/oktoast.dart';
-import 'auth_provider.dart';
+import 'package:flutter_riverpod_hooks/features/auth/providers/auth_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class AuthPage extends HookConsumerWidget {
   const AuthPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final usernameController = useTextEditingController();
     final passwordController = useTextEditingController();
     final isLogin = useState(true);
@@ -22,10 +24,10 @@ class AuthPage extends HookConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
-                'BeingDex',
+              Text(
+                l10n.appTitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF226AD1),
@@ -33,7 +35,7 @@ class AuthPage extends HookConsumerWidget {
               ),
               const SizedBox(height: 48),
               Text(
-                isLogin.value ? '欢迎回来' : '开启交易之旅',
+                isLogin.value ? l10n.welcomeBack : l10n.startJourney,
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -41,14 +43,14 @@ class AuthPage extends HookConsumerWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                isLogin.value ? '输入你的账号密码以登录' : '创建一个新账号以开始',
+                isLogin.value ? l10n.loginSubtitle : l10n.registerSubtitle,
                 style: const TextStyle(color: Colors.grey),
               ),
               const SizedBox(height: 32),
               TextField(
                 controller: usernameController,
                 decoration: InputDecoration(
-                  labelText: '用户名',
+                  labelText: l10n.username,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -60,7 +62,7 @@ class AuthPage extends HookConsumerWidget {
                 controller: passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: '密码',
+                  labelText: l10n.password,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -73,7 +75,7 @@ class AuthPage extends HookConsumerWidget {
                   final username = usernameController.text;
                   final password = passwordController.text;
                   if (username.isEmpty || password.isEmpty) {
-                    showToast('请填写完整信息');
+                    showToast(l10n.fillFields);
                     return;
                   }
                   try {
@@ -87,7 +89,7 @@ class AuthPage extends HookConsumerWidget {
                           .register(username, password);
                     }
                   } catch (e) {
-                    showToast('操作失败: $e');
+                    showToast('${l10n.operationFailed}: $e');
                   }
                 },
                 style: ElevatedButton.styleFrom(
@@ -99,14 +101,18 @@ class AuthPage extends HookConsumerWidget {
                   ),
                 ),
                 child: Text(
-                  isLogin.value ? '登录' : '注册',
+                  isLogin.value ? l10n.login : l10n.register,
                   style: const TextStyle(fontSize: 16),
                 ),
               ),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => isLogin.value = !isLogin.value,
-                child: Text(isLogin.value ? '没有账号？去注册' : '已有账号？去登录'),
+                child: Text(
+                  isLogin.value
+                      ? l10n.noAccountRegister
+                      : l10n.haveAccountLogin,
+                ),
               ),
             ],
           ),
