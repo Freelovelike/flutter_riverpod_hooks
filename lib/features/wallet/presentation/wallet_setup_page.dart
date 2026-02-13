@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_riverpod_hooks/features/wallet/providers/wallet_provider.dart';
 import 'package:flutter_riverpod_hooks/features/wallet/services/wallet_service.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 enum SetupStep { home, setPassword, backupMnemonic, importMnemonic }
 
@@ -91,26 +92,36 @@ class WalletSetupPage extends HookConsumerWidget {
         const Spacer(),
         Image.asset('assets/image/logo.png', height: 40),
         const SizedBox(height: 24),
-        const Text(
-          '欢迎使用 BeingDex',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        Text(
+          'walletSetupWelcome'.tr(),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-        const Text(
-          '创建或导入您的钱包以开始交易',
+        Text(
+          'walletSetupSubtitle'.tr(),
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 16, color: Color(0xFF969696)),
+          style: const TextStyle(fontSize: 16, color: Color(0xFF969696)),
         ),
         const Spacer(),
-        _button('创建新钱包', const Color(0xFF226AD1), Colors.white, () {
-          generatedMnemonic.value = ""; // Flag for Create path
-          step.value = SetupStep.setPassword;
-        }),
+        _button(
+          'createNewWallet'.tr(),
+          const Color(0xFF226AD1),
+          Colors.white,
+          () {
+            generatedMnemonic.value = ""; // Flag for Create path
+            step.value = SetupStep.setPassword;
+          },
+        ),
         const SizedBox(height: 16),
-        _button('导入已有钱包', const Color(0xFFF5F5F5), Colors.black, () {
-          generatedMnemonic.value = null; // Flag for Import path
-          step.value = SetupStep.setPassword;
-        }),
+        _button(
+          'importExistingWallet'.tr(),
+          const Color(0xFFF5F5F5),
+          Colors.black,
+          () {
+            generatedMnemonic.value = null; // Flag for Import path
+            step.value = SetupStep.setPassword;
+          },
+        ),
         const SizedBox(height: 48),
       ],
     );
@@ -125,21 +136,21 @@ class WalletSetupPage extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          '设置钱包密码',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        Text(
+          'setPassword'.tr(),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-        const Text(
-          '此密码仅用于本机的钱包加密存储，请妥善保管。',
-          style: TextStyle(fontSize: 14, color: Color(0xFF969696)),
+        Text(
+          'setPasswordSubtitle'.tr(),
+          style: const TextStyle(fontSize: 14, color: Color(0xFF969696)),
         ),
         const SizedBox(height: 32),
         TextField(
           controller: controller,
           obscureText: true,
           decoration: InputDecoration(
-            hintText: '输入加密密码',
+            hintText: 'enterPassword'.tr(),
             filled: true,
             fillColor: const Color(0xFFF5F5F5),
             border: OutlineInputBorder(
@@ -153,7 +164,7 @@ class WalletSetupPage extends HookConsumerWidget {
           controller: confirmController,
           obscureText: true,
           decoration: InputDecoration(
-            hintText: '确认加密密码',
+            hintText: 'confirmPassword'.tr(),
             filled: true,
             fillColor: const Color(0xFFF5F5F5),
             border: OutlineInputBorder(
@@ -163,7 +174,7 @@ class WalletSetupPage extends HookConsumerWidget {
           ),
         ),
         const Spacer(),
-        _button('继续', const Color(0xFF226AD1), Colors.white, () {
+        _button('continue'.tr(), const Color(0xFF226AD1), Colors.white, () {
           if (controller.text.length < 6) return;
           if (controller.text != confirmController.text) return;
 
@@ -191,14 +202,14 @@ class WalletSetupPage extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          '备份助记词',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        Text(
+          'backupMnemonic'.tr(),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-        const Text(
-          '请抄写并妥善保存这12个单词。',
-          style: TextStyle(fontSize: 14, color: Color(0xFF969696)),
+        Text(
+          'backupMnemonicSubtitle'.tr(),
+          style: const TextStyle(fontSize: 14, color: Color(0xFF969696)),
         ),
         const SizedBox(height: 32),
         Container(
@@ -233,11 +244,16 @@ class WalletSetupPage extends HookConsumerWidget {
           ),
         ),
         const Spacer(),
-        _button('我已妥善保存', const Color(0xFF226AD1), Colors.white, () async {
-          await ref
-              .read(walletProvider.notifier)
-              .createWallet(passwordController.text);
-        }),
+        _button(
+          'iHaveSaved'.tr(),
+          const Color(0xFF226AD1),
+          Colors.white,
+          () async {
+            await ref
+                .read(walletProvider.notifier)
+                .createWallet(passwordController.text);
+          },
+        ),
         const SizedBox(height: 48),
       ],
     );
@@ -252,21 +268,21 @@ class WalletSetupPage extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          '导入助记词',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        Text(
+          'importMnemonic'.tr(),
+          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-        const Text(
-          '请输入您的12个助记词单词，以空格分隔。',
-          style: TextStyle(fontSize: 14, color: Color(0xFF969696)),
+        Text(
+          'importMnemonicSubtitle'.tr(),
+          style: const TextStyle(fontSize: 14, color: Color(0xFF969696)),
         ),
         const SizedBox(height: 32),
         TextField(
           controller: mnemonicController,
           maxLines: 4,
           decoration: InputDecoration(
-            hintText: '输入助记词...',
+            hintText: 'enterMnemonic'.tr(),
             filled: true,
             fillColor: const Color(0xFFF5F5F5),
             border: OutlineInputBorder(
@@ -276,17 +292,22 @@ class WalletSetupPage extends HookConsumerWidget {
           ),
         ),
         const Spacer(),
-        _button('开始导入', const Color(0xFF226AD1), Colors.white, () async {
-          if (mnemonicController.text.split(' ').length != 12) {
-            return;
-          }
-          await ref
-              .read(walletProvider.notifier)
-              .importWallet(
-                mnemonicController.text.trim(),
-                passwordController.text,
-              );
-        }),
+        _button(
+          'startImport'.tr(),
+          const Color(0xFF226AD1),
+          Colors.white,
+          () async {
+            if (mnemonicController.text.split(' ').length != 12) {
+              return;
+            }
+            await ref
+                .read(walletProvider.notifier)
+                .importWallet(
+                  mnemonicController.text.trim(),
+                  passwordController.text,
+                );
+          },
+        ),
         const SizedBox(height: 48),
       ],
     );

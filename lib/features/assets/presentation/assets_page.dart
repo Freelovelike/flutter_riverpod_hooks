@@ -3,6 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
 
 class AssetsPage extends HookConsumerWidget {
   const AssetsPage({super.key});
@@ -10,7 +12,12 @@ class AssetsPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedTab = useState(0);
-    final tabs = ['现货账户', '合约账户', '游戏账户'];
+
+    final tabs = [
+      'spotAccount'.tr(),
+      'contractAccount'.tr(),
+      'gameAccount'.tr(),
+    ];
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -93,9 +100,9 @@ class AssetsPage extends HookConsumerWidget {
             children: [
               Row(
                 children: [
-                  const Text(
-                    '总资产',
-                    style: TextStyle(fontSize: 14, color: Colors.black),
+                  Text(
+                    'totalAssets'.tr(),
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
                   ),
                   const SizedBox(width: 4),
                   const Icon(Icons.visibility, size: 14, color: Colors.black),
@@ -129,9 +136,9 @@ class AssetsPage extends HookConsumerWidget {
               const Spacer(),
               Row(
                 children: [
-                  _buildBalanceInfo('可用余额', '\$14.38'),
+                  _buildBalanceInfo('availableBalance'.tr(), '\$14.38'),
                   const SizedBox(width: 40),
-                  _buildBalanceInfo('锁定余额', '\$1.00'),
+                  _buildBalanceInfo('lockedBalance'.tr(), '\$1.00'),
                 ],
               ),
             ],
@@ -170,7 +177,7 @@ class AssetsPage extends HookConsumerWidget {
       child: Row(
         children: [
           _buildActionButton(
-            '划转',
+            'transfer'.tr(),
             const Color(0xFF226AD1),
             Colors.white,
             () => context.push('/transfer'),
@@ -178,21 +185,21 @@ class AssetsPage extends HookConsumerWidget {
           const SizedBox(width: 8),
           if (isSpot) ...[
             _buildActionButton(
-              '充值',
+              'deposit'.tr(),
               const Color(0xFFF5F5F5),
               Colors.black,
               () {},
             ),
             const SizedBox(width: 8),
             _buildActionButton(
-              '提现',
+              'withdraw'.tr(),
               const Color(0xFFF5F5F5),
               Colors.black,
               () {},
             ),
           ] else ...[
             _buildActionButton(
-              '流水明细',
+              'transactionHistory'.tr(),
               const Color(0xFFF5F5F5),
               Colors.black,
               () {},
@@ -237,11 +244,11 @@ class AssetsPage extends HookConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(16, 24, 16, 16),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
           child: Text(
-            '资产',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            'assetsListTitle'.tr(),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
         _buildAssetItem(

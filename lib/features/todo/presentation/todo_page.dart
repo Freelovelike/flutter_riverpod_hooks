@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_riverpod_hooks/features/todo/providers/todo_models.dart';
 import 'package:flutter_riverpod_hooks/features/todo/providers/todo_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class TodoPage extends HookConsumerWidget {
   const TodoPage({super.key});
@@ -20,7 +21,7 @@ class TodoPage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('任务列表'),
+        title: Text('tasks'.tr()),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Column(
@@ -32,9 +33,9 @@ class TodoPage extends HookConsumerWidget {
                 Expanded(
                   child: TextField(
                     controller: textController,
-                    decoration: const InputDecoration(
-                      labelText: '输入任务内容',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: 'enterTask'.tr(),
+                      border: const OutlineInputBorder(),
                     ),
                   ),
                 ),
@@ -48,7 +49,7 @@ class TodoPage extends HookConsumerWidget {
                       textController.clear();
                     }
                   },
-                  child: const Text('新增'),
+                  child: Text('add'.tr()),
                 ),
               ],
             ),

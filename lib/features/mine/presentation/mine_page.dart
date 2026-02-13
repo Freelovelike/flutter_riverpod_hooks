@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_riverpod_hooks/features/auth/providers/auth_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class MinePage extends ConsumerWidget {
   const MinePage({super.key});
@@ -9,7 +9,7 @@ class MinePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -17,7 +17,7 @@ class MinePage extends ConsumerWidget {
             children: [
               _buildInviteSection(),
               _buildCommissionCard(
-                title: '总得到佣金',
+                title: 'totalCommission'.tr(),
                 unit: 'USDT',
                 total: '192834',
                 claimed: '3000.00',
@@ -25,14 +25,17 @@ class MinePage extends ConsumerWidget {
                 pendingUnit: 'USDT',
               ),
               _buildCommissionCard(
-                title: '总得到佣金',
+                title: 'totalCommission'.tr(),
                 unit: 'MGO',
                 total: '123.12',
                 claimed: '1000.00',
                 pending: '123.01',
                 pendingUnit: 'MGO',
               ),
-              _buildMenuItemView('交易大赛授权', Icons.groups_outlined),
+              _buildMenuItemView(
+                'tradingCompetitionAuth'.tr(),
+                Icons.groups_outlined,
+              ),
               _buildInvitedUsersSection(),
               const SizedBox(height: 20),
               _buildLogoutButton(ref),
@@ -61,10 +64,10 @@ class MinePage extends ConsumerWidget {
               color: Color(0xFF226AD1),
               borderRadius: BorderRadius.vertical(top: Radius.circular(14)),
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                '邀请好友交易可获得交易返佣',
-                style: TextStyle(
+                'inviteFriends'.tr(),
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.w300,
@@ -73,9 +76,9 @@ class MinePage extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
-            '已邀请（人）',
-            style: TextStyle(color: Color(0xFF5D5F68), fontSize: 14),
+          Text(
+            'invitedCount'.tr(),
+            style: const TextStyle(color: Color(0xFF5D5F68), fontSize: 14),
           ),
           const SizedBox(height: 10),
           const Text(
@@ -96,16 +99,16 @@ class MinePage extends ConsumerWidget {
               borderRadius: BorderRadius.circular(100),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFF0449E4).withOpacity(0.25),
+                  color: const Color(0xFF0449E4).withValues(alpha: 0.25),
                   blurRadius: 4,
                   offset: const Offset(0, 4),
                 ),
               ],
             ),
-            child: const Center(
+            child: Center(
               child: Text(
-                '立即邀请',
-                style: TextStyle(
+                'inviteNow'.tr(),
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -166,7 +169,7 @@ class MinePage extends ConsumerWidget {
                             ),
                           ),
                           TextSpan(
-                            text: '（$unit）',
+                            text: '($unit)',
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.black54,
@@ -194,14 +197,14 @@ class MinePage extends ConsumerWidget {
                       TextSpan(
                         children: [
                           TextSpan(
-                            text: '已领取 ',
+                            text: '${'claimed'.tr()} ',
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w300,
                             ),
                           ),
                           TextSpan(
-                            text: '（$unit）',
+                            text: '($unit)',
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.black54,
@@ -238,7 +241,7 @@ class MinePage extends ConsumerWidget {
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 4,
                   offset: const Offset(0, 4),
                 ),
@@ -260,9 +263,12 @@ class MinePage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  '待领取佣金',
-                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                Text(
+                  'pendingCommission'.tr(),
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -283,9 +289,9 @@ class MinePage extends ConsumerWidget {
                     color: const Color(0xFF226AD1),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Text(
-                    '领取',
-                    style: TextStyle(
+                  child: Text(
+                    'claim'.tr(),
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -333,9 +339,9 @@ class MinePage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            '受邀用户',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+          Text(
+            'invitedUsers'.tr(),
+            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 16),
           _buildUserListItem(
@@ -374,22 +380,22 @@ class MinePage extends ConsumerWidget {
       ),
       child: Column(
         children: [
-          _buildUserRow('受邀用户', address, isAgent: isAgent),
+          _buildUserRow('invitedUsers'.tr(), address, isAgent: isAgent),
           const SizedBox(height: 10),
-          _buildUserRow('交易量', volume),
+          _buildUserRow('tradingVolume'.tr(), volume),
           const SizedBox(height: 10),
-          _buildUserRow('上级用户', upline),
+          _buildUserRow('uplineUser'.tr(), upline),
           const SizedBox(height: 10),
-          _buildUserRow('返佣额', commission),
+          _buildUserRow('commissionAmount'.tr(), commission),
           const SizedBox(height: 10),
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '操作',
-                style: TextStyle(color: Color(0xFFB9B9B9), fontSize: 12),
+                'operation'.tr(),
+                style: const TextStyle(color: Color(0xFFB9B9B9), fontSize: 12),
               ),
-              Icon(Icons.more_horiz, size: 16, color: Colors.black54),
+              const Icon(Icons.more_horiz, size: 16, color: Colors.black54),
             ],
           ),
         ],
@@ -419,9 +425,9 @@ class MinePage extends ConsumerWidget {
                   color: const Color(0x1A226AD1),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text(
-                  '代理商',
-                  style: TextStyle(
+                child: Text(
+                  'agent'.tr(),
+                  style: const TextStyle(
                     color: Color(0xFF226AD1),
                     fontSize: 10,
                     fontWeight: FontWeight.w500,
@@ -439,9 +445,9 @@ class MinePage extends ConsumerWidget {
     return Center(
       child: TextButton(
         onPressed: () => ref.read(authProvider.notifier).logout(),
-        child: const Text(
-          '退出登录',
-          style: TextStyle(color: Colors.red, fontSize: 14),
+        child: Text(
+          'logout'.tr(),
+          style: const TextStyle(color: Colors.red, fontSize: 14),
         ),
       ),
     );

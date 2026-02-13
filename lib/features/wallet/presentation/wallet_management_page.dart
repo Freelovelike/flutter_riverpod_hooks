@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_riverpod_hooks/features/wallet/providers/wallet_provider.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
 
 class WalletManagementPage extends ConsumerWidget {
   const WalletManagementPage({super.key});
@@ -15,11 +17,11 @@ class WalletManagementPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(16.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: Text(
-                '钱包管理',
-                style: TextStyle(
+                'walletManagementTitle'.tr(),
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   color: Colors.black,
@@ -38,9 +40,9 @@ class WalletManagementPage extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        '当前钱包',
-                        style: TextStyle(
+                      Text(
+                        'currentWallet'.tr(),
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Color(0xFF969696),
                         ),
@@ -60,7 +62,7 @@ class WalletManagementPage extends ConsumerWidget {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              address ?? '未连接',
+                              address ?? 'notConnected'.tr(),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
@@ -75,9 +77,9 @@ class WalletManagementPage extends ConsumerWidget {
                         child: TextButton(
                           onPressed: () =>
                               ref.read(walletProvider.notifier).deleteWallet(),
-                          child: const Text(
-                            '移除此钱包',
-                            style: TextStyle(color: Colors.red),
+                          child: Text(
+                            'removeWallet'.tr(),
+                            style: const TextStyle(color: Colors.red),
                           ),
                         ),
                       ),

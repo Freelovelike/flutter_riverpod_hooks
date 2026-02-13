@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class TransferPage extends HookConsumerWidget {
   const TransferPage({super.key});
@@ -17,9 +18,9 @@ class TransferPage extends HookConsumerWidget {
           icon: const Icon(Icons.arrow_back_ios, size: 20, color: Colors.black),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
-          '划转',
-          style: TextStyle(
+        title: Text(
+          'transferPageTitle'.tr(),
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 16,
             fontWeight: FontWeight.w500,
@@ -41,9 +42,9 @@ class TransferPage extends HookConsumerWidget {
             const SizedBox(height: 10),
             _buildAccountSelector(),
             const SizedBox(height: 24),
-            const Text(
-              '币种',
-              style: TextStyle(
+            Text(
+              'currency'.tr(),
+              style: const TextStyle(
                 fontSize: 14,
                 color: Color(0xFF969696),
                 fontWeight: FontWeight.w500,
@@ -55,17 +56,20 @@ class TransferPage extends HookConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  '划转数量',
-                  style: TextStyle(
+                Text(
+                  'transferAmount'.tr(),
+                  style: const TextStyle(
                     fontSize: 14,
                     color: Color(0xFF969696),
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                const Text(
-                  '可用 1328USDT',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF969696)),
+                Text(
+                  'available'.tr(args: ['1328USDT']),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF969696),
+                  ),
                 ),
               ],
             ),
@@ -94,12 +98,12 @@ class TransferPage extends HookConsumerWidget {
           Expanded(
             child: Column(
               children: [
-                _buildAccountRow('从', '合约账户'),
+                _buildAccountRow('from'.tr(), 'contractAccount'.tr()),
                 const Padding(
                   padding: EdgeInsets.symmetric(vertical: 8),
                   child: Divider(height: 1, color: Color(0xFFEAEAEA)),
                 ),
-                _buildAccountRow('到', '现货账户'),
+                _buildAccountRow('to'.tr(), 'spotAccount'.tr()),
               ],
             ),
           ),
@@ -178,11 +182,14 @@ class TransferPage extends HookConsumerWidget {
       ),
       child: Row(
         children: [
-          const Expanded(
+          Expanded(
             child: TextField(
               decoration: InputDecoration(
-                hintText: '输入数量',
-                hintStyle: TextStyle(color: Color(0xFF969696), fontSize: 14),
+                hintText: 'enterAmount'.tr(),
+                hintStyle: const TextStyle(
+                  color: Color(0xFF969696),
+                  fontSize: 14,
+                ),
                 border: InputBorder.none,
                 isDense: true,
                 contentPadding: EdgeInsets.zero,
@@ -199,9 +206,9 @@ class TransferPage extends HookConsumerWidget {
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: const Text(
-              '全部',
-              style: TextStyle(
+            child: Text(
+              'all'.tr(),
+              style: const TextStyle(
                 color: Color(0xFF226AD1),
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -255,10 +262,10 @@ class TransferPage extends HookConsumerWidget {
         color: const Color(0xFF226AD1).withValues(alpha: 0.45),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Center(
+      child: Center(
         child: Text(
-          '确认划转',
-          style: TextStyle(
+          'confirmTransfer'.tr(),
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 14,
             fontWeight: FontWeight.w500,

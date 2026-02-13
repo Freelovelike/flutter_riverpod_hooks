@@ -7,7 +7,7 @@ import 'package:flutter_riverpod_hooks/features/assets/presentation/transfer_pag
 import 'package:flutter_riverpod_hooks/features/auth/providers/auth_provider.dart';
 import 'package:flutter_riverpod_hooks/features/wallet/providers/wallet_provider.dart';
 import 'package:flutter_riverpod_hooks/features/wallet/presentation/wallet_setup_page.dart';
-import 'package:flutter_riverpod_hooks/features/wallet/presentation/wallet_management_page.dart';
+import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -24,6 +24,10 @@ final routerProvider = Provider<GoRouter>((ref) {
     if (previous?.value != next.value) {
       listenable.notify();
     }
+  });
+
+  ref.listen(localeProvider, (previous, next) {
+    listenable.notify();
   });
 
   return GoRouter(

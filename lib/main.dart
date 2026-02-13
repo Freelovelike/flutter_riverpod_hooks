@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod_hooks/l10n/app_localizations.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_riverpod_hooks/core/router/router.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
+import 'package:flutter_riverpod_hooks/core/theme/theme_provider.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('zh')],
+      path: 'assets/translations',
+      fallbackLocale: const Locale('en'),
+      child: ProviderScope(child: MyApp()),
+    ),
+  );
 }
 
 class MyApp extends ConsumerWidget {
@@ -16,7 +27,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
-
+    final themeMode = ref.watch(themeModeProvider);
     return OKToast(
       child: MaterialApp.router(
         title: 'BeingDex',
@@ -24,11 +35,21 @@ class MyApp extends ConsumerWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF226AD1)),
           useMaterial3: true,
-          fontFamily: 'Montserrat', // Using common font for DEX apps
+          fontFamily: 'Montserrat',
         ),
+        darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF226AD1),
+            brightness: Brightness.dark,
+          ),
+          useMaterial3: true,
+          fontFamily: 'Montserrat',
+        ),
+        themeMode: themeMode,
         routerConfig: router,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
+        localizationsDelegates: context.localizationDelegates,
+        supportedLocales: context.supportedLocales,
+        locale: context.locale,
       ),
     );
   }

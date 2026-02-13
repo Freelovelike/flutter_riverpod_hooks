@@ -49,9 +49,7 @@ dependencies:
   encrypt: ^5.0.3
   pointycastle: ^3.9.1
   hex: ^0.2.0
-  intl: ^0.20.2
-  flutter_localizations:
-    sdk: flutter
+  easy_localization: ^3.0.8
 
 dev_dependencies:
   flutter_test:
@@ -83,6 +81,7 @@ flutter:
   assets:
     - assets/
     - assets/image/
+    - assets/translations/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

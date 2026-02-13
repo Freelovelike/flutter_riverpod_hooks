@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -7,7 +9,7 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -15,39 +17,31 @@ class HomePage extends HookConsumerWidget {
             children: [
               _buildBanner(),
               _buildAnnouncement(),
-              _buildSectionTitle('合约聚合场'),
+              _buildSectionTitle('contractAggregation'.tr()),
               _buildCard(
-                tag: '事件合约',
-                title: '赛事/政策结果预测',
-                subtitle: '基于链上预言机结算，实现去中心化事件判断',
-                stats: '参与人数1892人',
-                iconPath:
-                    'http://localhost:3845/assets/aae9f3937faa3eb9edd4958acb96cf2754f1559d.png',
+                tag: 'eventContract'.tr(),
+                title: 'eventContractDesc'.tr(),
+                subtitle: 'eventContractDetail'.tr(),
+                stats: 'participants'.tr(args: ['1892']),
               ),
               _buildCard(
-                tag: '秒合约',
-                title: '1m / 3m / 5m 短时交易',
-                subtitle: '秒级合约，灵活周期，快速捕捉市场波动',
-                stats: '参与人数2351人',
-                iconPath:
-                    'http://localhost:3845/assets/010aa74e3bf102e746dd9bdd7423d099430bf2e0.png',
+                tag: 'secondContract'.tr(),
+                title: 'secondContractDesc'.tr(),
+                subtitle: 'secondContractDetail'.tr(),
+                stats: 'participants'.tr(args: ['2351']),
               ),
-              _buildSectionTitle('游戏聚合场'),
+              _buildSectionTitle('gameAggregation'.tr()),
               _buildCard(
-                tag: '15秒竞猜',
-                title: '加密货币趋势竞猜',
-                subtitle: '15 秒涨跌竞猜，轻松体验即时行情挑战',
-                stats: '参与人数3124人',
-                iconPath:
-                    'http://localhost:3845/assets/61eed7fee9c3e612a3107e3a3e7583e7d383994f.png',
+                tag: 'guess15s'.tr(),
+                title: 'guess15sDesc'.tr(),
+                subtitle: 'guess15sDetail'.tr(),
+                stats: 'participants'.tr(args: ['3124']),
               ),
               _buildCard(
-                tag: '一元夺宝',
-                title: '夺宝赢1 BNB',
-                subtitle: '小投入·大惊喜，幸运即刻启程！',
-                stats: '参与人数3124人',
-                iconPath:
-                    'http://localhost:3845/assets/3d426ac1be4ad22adf99263290e46622337c4c7b.png',
+                tag: 'luckyDraw'.tr(),
+                title: 'luckyDrawDesc'.tr(),
+                subtitle: 'luckyDrawDetail'.tr(),
+                stats: 'participants'.tr(args: ['3124']),
               ),
               const SizedBox(height: 20),
             ],
@@ -80,10 +74,10 @@ class HomePage extends HookConsumerWidget {
         children: [
           const Icon(Icons.volume_up, size: 14, color: Color(0xFF969696)),
           const SizedBox(width: 6),
-          const Expanded(
+          Expanded(
             child: Text(
-              '【系统升级提示】本平台将于今晚 22:00 进行例行维护...',
-              style: TextStyle(fontSize: 11, color: Color(0xFF969696)),
+              'systemUpgradeNotice'.tr(),
+              style: const TextStyle(fontSize: 11, color: Color(0xFF969696)),
               overflow: TextOverflow.ellipsis,
             ),
           ),
@@ -112,7 +106,6 @@ class HomePage extends HookConsumerWidget {
     required String title,
     required String subtitle,
     required String stats,
-    required String iconPath,
   }) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -168,12 +161,12 @@ class HomePage extends HookConsumerWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Image.network(
-                iconPath,
-                width: 64,
-                height: 60,
-                fit: BoxFit.contain,
-              ),
+              // Image.network(
+              //   iconPath,
+              //   width: 64,
+              //   height: 60,
+              //   fit: BoxFit.contain,
+              // ),
             ],
           ),
           const Padding(
