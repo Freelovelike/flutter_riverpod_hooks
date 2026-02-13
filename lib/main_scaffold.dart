@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_riverpod_hooks/shared/widgets/common_header.dart';
 import 'package:flutter_riverpod_hooks/features/home/presentation/home_page.dart';
@@ -9,13 +7,14 @@ import 'package:flutter_riverpod_hooks/features/mine/presentation/mine_page.dart
 import 'package:flutter_riverpod_hooks/features/wallet/presentation/wallet_management_page.dart';
 import 'package:easy_localization/easy_localization.dart';
 
+import 'package:flutter_riverpod_hooks/core/navigation/navigation_provider.dart';
+
 class MainScaffold extends HookConsumerWidget {
   const MainScaffold({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedIndex = useState(0);
-
+    final selectedIndex = ref.watch(navigationControllerProvider);
     final pages = [
       const HomePage(),
       const AssetsPage(),
@@ -25,10 +24,11 @@ class MainScaffold extends HookConsumerWidget {
 
     return Scaffold(
       appBar: const CommonHeader(),
-      body: IndexedStack(index: selectedIndex.value, children: pages),
+      body: IndexedStack(index: selectedIndex, children: pages),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: selectedIndex.value,
-        onTap: (index) => selectedIndex.value = index,
+        currentIndex: selectedIndex,
+        onTap: (index) =>
+            ref.read(navigationControllerProvider.notifier).setIndex(index),
         selectedItemColor: const Color(0xFF226AD1),
         unselectedItemColor: const Color(0xFF969696),
         selectedFontSize: 12,

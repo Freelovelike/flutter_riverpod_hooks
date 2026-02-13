@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:flutter_riverpod_hooks/core/router/router.dart';
 
 import 'package:flutter_riverpod_hooks/core/theme/theme_provider.dart';
+import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +28,8 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
+
     return OKToast(
       child: MaterialApp.router(
         title: 'BeingDex',
@@ -49,7 +51,7 @@ class MyApp extends ConsumerWidget {
         routerConfig: router,
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
-        locale: context.locale,
+        locale: locale ?? context.locale,
       ),
     );
   }

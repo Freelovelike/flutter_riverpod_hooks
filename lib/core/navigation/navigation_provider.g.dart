@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'locale_provider.dart';
+part of 'navigation_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,52 +9,53 @@ part of 'locale_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(LocaleNotifier)
-const localeProvider = LocaleNotifierProvider._();
+@ProviderFor(NavigationController)
+const navigationControllerProvider = NavigationControllerProvider._();
 
-final class LocaleNotifierProvider
-    extends $NotifierProvider<LocaleNotifier, Locale?> {
-  const LocaleNotifierProvider._()
+final class NavigationControllerProvider
+    extends $NotifierProvider<NavigationController, int> {
+  const NavigationControllerProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'localeProvider',
-        isAutoDispose: true,
+        name: r'navigationControllerProvider',
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$localeNotifierHash();
+  String debugGetCreateSourceHash() => _$navigationControllerHash();
 
   @$internal
   @override
-  LocaleNotifier create() => LocaleNotifier();
+  NavigationController create() => NavigationController();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(Locale? value) {
+  Override overrideWithValue(int value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<Locale?>(value),
+      providerOverride: $SyncValueProvider<int>(value),
     );
   }
 }
 
-String _$localeNotifierHash() => r'070219a8712e0bf7346820e17bfe8a87bfccb49a';
+String _$navigationControllerHash() =>
+    r'158e437b411970a4a5588991838bfd9742652812';
 
-abstract class _$LocaleNotifier extends $Notifier<Locale?> {
-  Locale? build();
+abstract class _$NavigationController extends $Notifier<int> {
+  int build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<Locale?, Locale?>;
+    final ref = this.ref as $Ref<int, int>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<Locale?, Locale?>,
-              Locale?,
+              AnyNotifier<int, int>,
+              int,
               Object?,
               Object?
             >;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:flutter_riverpod_hooks/features/auth/providers/auth_provider.dart';
+import 'package:flutter_riverpod_hooks/features/wallet/providers/wallet_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 class MinePage extends ConsumerWidget {
@@ -444,9 +444,9 @@ class MinePage extends ConsumerWidget {
   Widget _buildLogoutButton(WidgetRef ref) {
     return Center(
       child: TextButton(
-        onPressed: () => ref.read(authProvider.notifier).logout(),
+        onPressed: () => ref.read(walletProvider.notifier).deleteWallet(),
         child: Text(
-          'logout'.tr(),
+          'removeWallet'.tr(),
           style: const TextStyle(color: Colors.red, fontSize: 14),
         ),
       ),
