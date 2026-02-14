@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod_hooks/features/wallet/providers/wallet_provider.dart';
 import 'package:flutter_riverpod_hooks/core/theme/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -40,6 +41,14 @@ class MinePage extends ConsumerWidget {
                 colors,
                 'tradingCompetitionAuth'.tr(),
                 Icons.groups_outlined,
+              ),
+              GestureDetector(
+                onTap: () => context.push('/settings'),
+                child: _buildMenuItemView(
+                  colors,
+                  'settings'.tr(),
+                  Icons.settings_outlined,
+                ),
               ),
               _buildInvitedUsersSection(colors),
               const SizedBox(height: 20),

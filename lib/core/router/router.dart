@@ -8,11 +8,10 @@ import 'package:flutter_riverpod_hooks/features/wallet/presentation/wallet_setup
 import 'package:flutter_riverpod_hooks/features/splash/presentation/splash_page.dart';
 import 'package:flutter_riverpod_hooks/features/splash/presentation/unlock_page.dart';
 import 'package:flutter_riverpod_hooks/features/splash/providers/app_lock_provider.dart';
-import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
+import 'package:flutter_riverpod_hooks/features/settings/presentation/settings_page.dart';
+import 'package:flutter_riverpod_hooks/shared/widgets/webview_page.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
-  // Watch locale to force router recreation on language change
-  ref.watch(localeProvider);
 
   final walletState = ref.watch(walletProvider);
   final appLockState = ref.watch(appLockProvider);
@@ -79,6 +78,20 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/transfer',
         builder: (context, state) => const TransferPage(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsPage(),
+      ),
+      GoRoute(
+        path: '/webview',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, String>;
+          return WebViewPage(
+            url: extra['url']!,
+            title: extra['title']!,
+          );
+        },
       ),
     ],
   );

@@ -4,7 +4,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
 import 'package:flutter_riverpod_hooks/core/theme/app_theme.dart';
 
 class AssetsPage extends HookConsumerWidget {
