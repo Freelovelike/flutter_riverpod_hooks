@@ -1,10 +1,15 @@
+import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:go_router/go_router.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_riverpod_hooks/core/theme/app_theme.dart';
 import 'package:flutter_riverpod_hooks/shared/services/webview_bridge.dart';
+import 'package:flutter_riverpod_hooks/core/theme/theme_provider.dart';
+import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
 
-class WebViewPage extends StatefulWidget {
+class WebViewPage extends ConsumerStatefulWidget {
   final String url;
   final String title;
 
@@ -15,10 +20,10 @@ class WebViewPage extends StatefulWidget {
   });
 
   @override
-  State<WebViewPage> createState() => _WebViewPageState();
+  ConsumerState<WebViewPage> createState() => _WebViewPageState();
 }
 
-class _WebViewPageState extends State<WebViewPage> {
+class _WebViewPageState extends ConsumerState<WebViewPage> {
   double _progress = 0;
   late final WebViewBridge _bridge;
 
@@ -27,25 +32,25 @@ class _WebViewPageState extends State<WebViewPage> {
     super.initState();
     _bridge = WebViewBridge();
 
-    // 暴露方法供 web 子项目调用
+    // 1. 暴露方法供 web 子项目调用
     _bridge.expose({
-      // 获取钱包地址
       'getWalletAddress': () => '0x9b...E652',
-      // 获取当前链 ID
       'getChainId': () => 1,
-      // 获取当前主题模式
       'getThemeMode': () =>
           Theme.of(context).brightness == Brightness.dark ? 'dark' : 'light',
-      // 关闭 WebView 页面
       'closePage': () => context.pop(),
-      // 导航到指定路由
       'navigateTo': (String route) => context.push(route),
     });
 
-    // 监听 web 子项目发来的事件
+    // 2. 监听子项目 Ready 信号，同步状态
+    _bridge.on('iframeReady', (payload) {
+      debugPrint('[WebView] 收到 iframeReady，同步状态...');
+      _syncState();
+    });
+
+    // 3. 监听业务事件
     _bridge.on('txSuccess', (payload) {
       debugPrint('[WebView] Transaction success: $payload');
-      // 可以在这里弹出 snackbar 或执行其他操作
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('交易成功: ${payload ?? ''}')),
@@ -66,6 +71,20 @@ class _WebViewPageState extends State<WebViewPage> {
     });
   }
 
+  /// 同步当前主题和语言到 Web 端
+  void _syncState() {
+    // 稍微延迟一下，确保 JS 侧的监听器已经挂载好
+    Future.delayed(const Duration(milliseconds: 200), () {
+      if (!mounted) return;
+      final theme = Theme.of(context).brightness == Brightness.dark ? 'dark' : 'light';
+      final lang = context.locale.languageCode;
+      
+      debugPrint('[WebView] Sending themeChange: $theme, langChange: $lang');
+      _bridge.notify('themeChange', theme);
+      _bridge.notify('langChange', lang);
+    });
+  }
+
   @override
   void dispose() {
     _bridge.dispose();
@@ -76,14 +95,28 @@ class _WebViewPageState extends State<WebViewPage> {
   Widget build(BuildContext context) {
     final colors = AppColorsExtension.of(context);
 
+    // 监听主题变化，动态通知 Web 端
+    ref.listen(themeModeProvider, (previous, next) {
+      final theme = next == ThemeMode.dark ? 'dark' : 'light';
+      debugPrint('[WebView] Theme changed, notifying: $theme');
+      _bridge.notify('themeChange', theme);
+    });
+
+    // 监听语言变化，动态通知 Web 端
+    ref.listen(localeProvider, (previous, next) {
+      if (next != null) {
+        final lang = next.languageCode;
+        debugPrint('[WebView] Locale changed, notifying: $lang');
+        _bridge.notify('langChange', lang);
+      }
+    });
+
     return Scaffold(
       backgroundColor: colors.backgroundBase,
       body: SafeArea(
         child: Column(
           children: [
-            // 顶部导航栏
             _buildAppBar(context, colors),
-            // 加载进度条
             if (_progress < 1.0)
               LinearProgressIndicator(
                 value: _progress,
@@ -91,28 +124,28 @@ class _WebViewPageState extends State<WebViewPage> {
                 valueColor: AlwaysStoppedAnimation<Color>(colors.themePrimary),
                 minHeight: 2,
               ),
-            // WebView 内容
             Expanded(
               child: InAppWebView(
                 initialUrlRequest: URLRequest(
-                  url: WebUri(widget.url),
+                  url: WebUri(_buildInitialUrl()),
                 ),
+                initialUserScripts: UnmodifiableListView<UserScript>([
+                  _bridge.bridgeUserScript,
+                ]),
                 initialSettings: InAppWebViewSettings(
                   transparentBackground: true,
                   javaScriptEnabled: true,
                   domStorageEnabled: true,
                   allowFileAccess: true,
-                  mixedContentMode:
-                      MixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
+                  mixedContentMode: MixedContentMode.MIXED_CONTENT_ALWAYS_ALLOW,
                   useHybridComposition: true,
                 ),
                 onWebViewCreated: (controller) {
-                  // 绑定桥接
                   _bridge.attach(controller);
                 },
                 onLoadStop: (controller, url) async {
-                  // 页面加载完毕后注入桥接脚本
-                  await _bridge.inject();
+                  // 页面加载完毕后手动同步一次状态
+                  _syncState();
                 },
                 onProgressChanged: (controller, progress) {
                   setState(() {
@@ -125,6 +158,23 @@ class _WebViewPageState extends State<WebViewPage> {
         ),
       ),
     );
+  }
+
+  /// 构建初始 URL，带上语言和主题参数
+  String _buildInitialUrl() {
+    final uri = Uri.parse(widget.url);
+    final theme = Theme.of(context).brightness == Brightness.dark ? 'dark' : 'light';
+    final lang = context.locale.languageCode;
+    
+    // 模拟 TSLab 中的参数构建
+    final params = Map<String, String>.from(uri.queryParameters);
+    params['lang'] = lang;
+    params['theme'] = theme;
+    // 如果有其他参数如 authCode, ilink 也可以在这里添加
+    params['authCode'] = ''; 
+    params['ilink'] = '';
+
+    return uri.replace(queryParameters: params).toString();
   }
 
   Widget _buildAppBar(BuildContext context, AppColorsExtension colors) {

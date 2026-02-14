@@ -54,6 +54,12 @@ class WebViewBridge {
 
   // ==================== 生命周期 ====================
 
+  /// 获取用于初始化注入的 UserScript
+  UserScript get bridgeUserScript => UserScript(
+        source: _bridgeScript,
+        injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
+      );
+
   /// 绑定 InAppWebViewController，注册 JS Handler
   ///
   /// 必须在 [onWebViewCreated] 回调中调用
@@ -130,13 +136,7 @@ class WebViewBridge {
       'args': args ?? [],
     });
 
-    await _controller!.evaluateJavascript(source: '''
-      window.dispatchEvent(new MessageEvent('message', {
-        data: $msg,
-        origin: window.location.origin,
-        source: window
-      }));
-    ''');
+    await _controller!.evaluateJavascript(source: 'window.__flutterTransmit($msg);');
 
     try {
       return await completer.future;
@@ -181,13 +181,7 @@ class WebViewBridge {
       'payload': payload,
     });
 
-    await _controller!.evaluateJavascript(source: '''
-      window.dispatchEvent(new MessageEvent('message', {
-        data: $msg,
-        origin: window.location.origin,
-        source: window
-      }));
-    ''');
+    await _controller!.evaluateJavascript(source: 'window.__flutterTransmit($msg);');
   }
 
   // ==================== 内部消息处理 ====================
@@ -315,57 +309,70 @@ class WebViewBridge {
     }
 
     final msg = jsonEncode(reply);
-    await _controller!.evaluateJavascript(source: '''
-      window.dispatchEvent(new MessageEvent('message', {
-        data: $msg,
-        origin: window.location.origin,
-        source: window
-      }));
-    ''');
+    await _controller!.evaluateJavascript(source: 'window.__flutterTransmit($msg);');
   }
 
   // ==================== 注入的 JS 桥接脚本 ====================
 
   /// 注入到 web 页面的桥接脚本
-  ///
-  /// 功能：
-  /// 1. 拦截 window.postMessage，将 reply/event/call 类型消息转发至 Flutter
-  /// 2. 兼容 web 端已有的 crossWindow 通信协议
   static const _bridgeScript = '''
 (function() {
   if (window.__flutterBridgeInjected) return;
   window.__flutterBridgeInjected = true;
-
-  // 保存原始 postMessage
-  var _origPostMessage = window.postMessage.bind(window);
-
-  // 拦截 window.postMessage
-  // web 端代码通过 event.source.postMessage(reply) 回复消息
-  // 因为 Flutter 发送的 MessageEvent 的 source 是 window 自身
-  // 所以回复也会通过 window.postMessage 发出
-  window.postMessage = function(msg, targetOrigin, transfer) {
-    // 转发桥接消息给 Flutter
-    if (msg && typeof msg === 'object' && msg.type) {
-      try {
-        window.flutter_inappwebview.callHandler(
-          '_flutterBridge',
-          JSON.parse(JSON.stringify(msg))
-        );
-      } catch(e) {
-        console.warn('[FlutterBridge] Forward to Flutter failed:', e);
-      }
-    }
-    // 同时保留本地分发（web 内部通信可能依赖）
-    return _origPostMessage(msg, targetOrigin || '*', transfer);
+  // --- 1. 核心伪装：让子应用确信自己跑在 iframe 里 ---
+  var _virtualParent = {
+    postMessage: function(msg, origin) {
+      // 子应用调用 parent.postMessage 时，转发给 Flutter
+      window.__flutterInternalPost(msg);
+    },
+    closed: false, frames: window.frames, length: window.length,
+    name: 'flutter_host', opener: null, self: null, top: null, window: null
   };
-
-  // 同样拦截 parent.postMessage（兼容 web 代码中对 parent 的引用）
-  if (window.parent === window) {
-    // 在 InAppWebView 中 parent === self，无需额外处理
-    // 上面的 window.postMessage 拦截已经覆盖
-  }
-
-  console.log('[FlutterBridge] Bridge script injected successfully');
+  _virtualParent.self = _virtualParent.parent = _virtualParent.top = _virtualParent.window = _virtualParent;
+  try {
+    Object.defineProperty(window, 'parent', {
+      get: function() { return _virtualParent; },
+      set: function() {}
+    });
+    window.__virtualParent = _virtualParent;
+    console.log('[FlutterBridge] window.parent mocked.');
+  } catch(e) { console.warn('[FlutterBridge] Mock parent failed:', e); }
+  // --- 2. 消息流转逻辑 ---
+  var msgQueue = [];
+  
+  // Flutter 调用这个函数来发消息给 Web
+  window.__flutterTransmit = function(msg) {
+    if (typeof msg === 'string') msg = JSON.parse(msg);
+    msg.__fromFlutter = true; // 增加标识，防止回传给 Flutter
+    
+    // 触发一个真实的 message 事件，确保跨窗口通信库能收到
+    window.postMessage(msg, '*');
+  };
+  // 转发给 Flutter 的核心函数
+  window.__flutterInternalPost = function(msg) {
+    if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+      window.flutter_inappwebview.callHandler('_flutterBridge', msg);
+      return true;
+    }
+    return false;
+  };
+  // 轮询检查原生对象是否就绪并排空队列
+  var checkTimer = setInterval(function() {
+    if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+      while (msgQueue.length > 0) window.__flutterInternalPost(msgQueue.shift());
+      clearInterval(checkTimer);
+    }
+  }, 50);
+  // 监听所有 message，过滤掉 Flutter 发过来的，剩下的全部转发给 Flutter
+  window.addEventListener('message', function(event) {
+    var msg = event.data;
+    if (!msg || typeof msg !== 'object' || !msg.type || msg.__fromFlutter) return;
+    console.log('[FlutterBridge] Captured Web message:', msg.type);
+    if (!window.__flutterInternalPost(msg)) {
+      msgQueue.push(msg);
+    }
+  });
+  console.log('[FlutterBridge] Bridge ready.');
 })();
 ''';
 }
