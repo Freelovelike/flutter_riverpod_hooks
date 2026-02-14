@@ -89,5 +89,11 @@
   "startImport": "Start Import",
   "tasks": "Tasks",
   "enterTask": "Enter task content",
-  "add": "Add"
+  "add": "Add",
+  "unlockTitle": "Welcome Back",
+  "enterPasswordToUnlock": "Enter your password to unlock the wallet",
+  "unlock": "Unlock",
+  "useBiometrics": "Use Biometrics",
+  "passwordIncorrect": "Incorrect password",
+  "biometricReason": "Authenticate to unlock your wallet"
 }

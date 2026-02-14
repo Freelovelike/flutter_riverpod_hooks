@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:flutter_riverpod_hooks/core/theme/app_theme.dart';
 import 'package:flutter_riverpod_hooks/core/theme/theme_provider.dart';
 import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
 
@@ -15,8 +16,10 @@ class CommonHeader extends HookConsumerWidget implements PreferredSizeWidget {
     final themeMode = ref.watch(themeModeProvider);
     final isDark = themeMode == ThemeMode.dark;
 
+    final colors = AppColorsExtension.of(context);
+
     return AppBar(
-      backgroundColor: Theme.of(context).cardColor,
+      backgroundColor: colors.background,
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       scrolledUnderElevation: 0,
@@ -26,9 +29,7 @@ class CommonHeader extends HookConsumerWidget implements PreferredSizeWidget {
           children: [
             // Logo
             Image.asset(
-              isDark
-                  ? 'assets/image/logo.png'
-                  : 'assets/image/logo.png', // Change if you have a dark logo
+              'assets/image/logo.png', // Change if you have a dark logo
               height: 20,
             ),
             const Spacer(),
@@ -48,9 +49,6 @@ class CommonHeader extends HookConsumerWidget implements PreferredSizeWidget {
                   children: [
                     CircleAvatar(
                       radius: 8,
-                      // backgroundImage: NetworkImage(
-                      //   'http://localhost:3845/assets/7295164430571b46b9fbb1781cd8a3e8631971eb.png',
-                      // ),
                     ),
                     SizedBox(width: 6),
                     Flexible(
@@ -73,7 +71,13 @@ class CommonHeader extends HookConsumerWidget implements PreferredSizeWidget {
             DropdownButtonHideUnderline(
               child: DropdownButton<Locale>(
                 value: context.locale,
-                icon: const Icon(Icons.language, size: 20),
+                icon: Icon(
+                  Icons.language,
+                  size: 20,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                dropdownColor: colors.cardBackground,
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                 items: const [
                   DropdownMenuItem(value: Locale('en'), child: Text('EN')),
                   DropdownMenuItem(value: Locale('zh'), child: Text('中文')),
@@ -92,6 +96,7 @@ class CommonHeader extends HookConsumerWidget implements PreferredSizeWidget {
               icon: Icon(
                 isDark ? Icons.wb_sunny : Icons.nightlight_round,
                 size: 20,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
               onPressed: () {
                 ref.read(themeModeProvider.notifier).toggleTheme();

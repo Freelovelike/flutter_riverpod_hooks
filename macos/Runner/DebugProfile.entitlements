@@ -14,5 +14,9 @@
 	<array>
 		<string>$(AppIdentifierPrefix)com.example.flutterRiverpodHooks</string>
 	</array>
+	<key>com.apple.security.personal-information.location</key>
+<true/>
+<key>com.apple.security.device.biometrics</key>
+<true/>
 </dict>
 </plist>

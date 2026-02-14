@@ -89,5 +89,11 @@
   "startImport": "开始导入",
   "tasks": "任务列表",
   "enterTask": "输入任务内容",
-  "add": "新增"
+  "add": "新增",
+  "unlockTitle": "欢迎回来",
+  "enterPasswordToUnlock": "请输入密码解锁钱包",
+  "unlock": "解锁",
+  "useBiometrics": "使用生物认证",
+  "passwordIncorrect": "密码错误",
+  "biometricReason": "验证身份以解锁钱包"
 }

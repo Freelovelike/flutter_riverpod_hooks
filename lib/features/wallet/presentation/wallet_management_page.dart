@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:flutter_riverpod_hooks/features/wallet/providers/wallet_provider.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
+import 'package:flutter_riverpod_hooks/core/theme/app_theme.dart';
 
 class WalletManagementPage extends ConsumerWidget {
   const WalletManagementPage({super.key});
@@ -10,9 +10,10 @@ class WalletManagementPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final walletState = ref.watch(walletProvider);
+    final colors = AppColorsExtension.of(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: colors.backgroundBase,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -21,10 +22,10 @@ class WalletManagementPage extends ConsumerWidget {
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 'walletManagementTitle'.tr(),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: colors.foregroundPrimary,
                 ),
               ),
             ),
@@ -34,7 +35,7 @@ class WalletManagementPage extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: colors.backgroundCard,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Column(
@@ -42,44 +43,44 @@ class WalletManagementPage extends ConsumerWidget {
                     children: [
                       Text(
                         'currentWallet'.tr(),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
-                          color: Color(0xFF969696),
+                          color: colors.foregroundSecondary,
                         ),
                       ),
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                             radius: 12,
-                            backgroundColor: Color(0xFF226AD1),
+                            backgroundColor: colors.themePrimary,
                             child: Icon(
                               Icons.account_balance_wallet,
                               size: 14,
-                              color: Colors.white,
+                              color: colors.foregroundCtaText,
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               address ?? 'notConnected'.tr(),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                color: colors.foregroundPrimary,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const Divider(height: 40),
+                      Divider(height: 40, color: colors.borderDivider),
                       Center(
                         child: TextButton(
                           onPressed: () =>
                               ref.read(walletProvider.notifier).deleteWallet(),
                           child: Text(
                             'removeWallet'.tr(),
-                            style: const TextStyle(color: Colors.red),
+                            style: TextStyle(color: colors.foregroundError),
                           ),
                         ),
                       ),
@@ -96,3 +97,4 @@ class WalletManagementPage extends ConsumerWidget {
     );
   }
 }
+

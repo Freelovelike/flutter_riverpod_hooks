@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
+import 'package:flutter_riverpod_hooks/core/theme/app_theme.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:easy_localization/easy_localization.dart';
 
@@ -8,36 +9,45 @@ class HomePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final colors = AppColorsExtension.of(context);
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: colors.backgroundBase,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildBanner(),
-              _buildAnnouncement(),
-              _buildSectionTitle('contractAggregation'.tr()),
+              _buildAnnouncement(colors),
+              _buildSectionTitle(context, 'contractAggregation'.tr(), colors),
               _buildCard(
+                context,
+                colors: colors,
                 tag: 'eventContract'.tr(),
                 title: 'eventContractDesc'.tr(),
                 subtitle: 'eventContractDetail'.tr(),
                 stats: 'participants'.tr(args: ['1892']),
               ),
               _buildCard(
+                context,
+                colors: colors,
                 tag: 'secondContract'.tr(),
                 title: 'secondContractDesc'.tr(),
                 subtitle: 'secondContractDetail'.tr(),
                 stats: 'participants'.tr(args: ['2351']),
               ),
-              _buildSectionTitle('gameAggregation'.tr()),
+              _buildSectionTitle(context, 'gameAggregation'.tr(), colors),
               _buildCard(
+                context,
+                colors: colors,
                 tag: 'guess15s'.tr(),
                 title: 'guess15sDesc'.tr(),
                 subtitle: 'guess15sDetail'.tr(),
                 stats: 'participants'.tr(args: ['3124']),
               ),
               _buildCard(
+                context,
+                colors: colors,
                 tag: 'luckyDraw'.tr(),
                 title: 'luckyDrawDesc'.tr(),
                 subtitle: 'luckyDrawDetail'.tr(),
@@ -61,47 +71,57 @@ class HomePage extends HookConsumerWidget {
           child: Image.network(
             'http://localhost:3845/assets/5249f7543f8e457dcff666c1567fc3ed741df327.png',
             fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => Container(
+              color: Colors.grey.withOpacity(0.1),
+              child: const Icon(Icons.image_not_supported),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildAnnouncement() {
+  Widget _buildAnnouncement(AppColorsExtension colors) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          const Icon(Icons.volume_up, size: 14, color: Color(0xFF969696)),
+          Icon(Icons.volume_up, size: 14, color: colors.foregroundSecondary),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               'systemUpgradeNotice'.tr(),
-              style: const TextStyle(fontSize: 11, color: Color(0xFF969696)),
+              style: TextStyle(fontSize: 11, color: colors.foregroundSecondary),
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const Icon(Icons.chevron_right, size: 14, color: Color(0xFF969696)),
+          Icon(Icons.chevron_right, size: 14, color: colors.foregroundSecondary),
         ],
       ),
     );
   }
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(
+    BuildContext context,
+    String title,
+    AppColorsExtension colors,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: Colors.black,
+          color: colors.foregroundPrimary,
         ),
       ),
     );
   }
 
-  Widget _buildCard({
+  Widget _buildCard(
+    BuildContext context, {
+    required AppColorsExtension colors,
     required String tag,
     required String title,
     required String subtitle,
@@ -111,7 +131,7 @@ class HomePage extends HookConsumerWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colors.backgroundCard,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -129,13 +149,13 @@ class HomePage extends HookConsumerWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: const Color(0x1A226AD1),
+                        color: colors.themePrimary.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
                         tag,
-                        style: const TextStyle(
-                          color: Color(0xFF226AD1),
+                        style: TextStyle(
+                          color: colors.themePrimary,
                           fontSize: 10,
                         ),
                       ),
@@ -143,49 +163,47 @@ class HomePage extends HookConsumerWidget {
                     const SizedBox(height: 8),
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: Colors.black,
+                        color: colors.foregroundPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: Color(0xFF969696),
+                        color: colors.foregroundSecondary,
                       ),
                     ),
                   ],
                 ),
               ),
               const SizedBox(width: 12),
-              // Image.network(
-              //   iconPath,
-              //   width: 64,
-              //   height: 60,
-              //   fit: BoxFit.contain,
-              // ),
             ],
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
-            child: Divider(height: 1, color: Color(0xFFEEEEEE)),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Divider(height: 1, color: colors.borderDivider),
           ),
           Row(
             children: [
-              const Icon(Icons.people_outline, size: 16, color: Colors.black54),
+              Icon(
+                Icons.people_outline,
+                size: 16,
+                color: colors.foregroundSecondary,
+              ),
               const SizedBox(width: 8),
               Text(
                 stats,
-                style: const TextStyle(fontSize: 12, color: Colors.black),
+                style: TextStyle(fontSize: 12, color: colors.foregroundPrimary),
               ),
               const Spacer(),
-              const Icon(
+              Icon(
                 Icons.arrow_forward_ios,
                 size: 14,
-                color: Color(0xFF226AD1),
+                color: colors.themePrimary,
               ),
             ],
           ),
@@ -194,3 +212,4 @@ class HomePage extends HookConsumerWidget {
     );
   }
 }
+

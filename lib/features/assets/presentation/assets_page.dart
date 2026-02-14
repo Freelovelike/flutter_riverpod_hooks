@@ -5,6 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod_hooks/core/localization/locale_provider.dart';
+import 'package:flutter_riverpod_hooks/core/theme/app_theme.dart';
 
 class AssetsPage extends HookConsumerWidget {
   const AssetsPage({super.key});
@@ -19,19 +20,21 @@ class AssetsPage extends HookConsumerWidget {
       'gameAccount'.tr(),
     ];
 
+    final colors = AppColorsExtension.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: colors.background,
       body: SafeArea(
         child: Column(
           children: [
-            _buildTabSelector(selectedTab, tabs),
+            AssetTabSelector(selectedTab: selectedTab, tabs: tabs),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    _buildBalanceCard(),
-                    _buildActionButtons(context, selectedTab.value),
-                    _buildAssetListSection(),
+                    const AssetBalanceCard(),
+                    AssetActionButtons(tabIndex: selectedTab.value),
+                    const AssetListSection(),
                   ],
                 ),
               ),
@@ -41,8 +44,21 @@ class AssetsPage extends HookConsumerWidget {
       ),
     );
   }
+}
 
-  Widget _buildTabSelector(ValueNotifier<int> selectedTab, List<String> tabs) {
+class AssetTabSelector extends StatelessWidget {
+  final ValueNotifier<int> selectedTab;
+  final List<String> tabs;
+
+  const AssetTabSelector({
+    super.key,
+    required this.selectedTab,
+    required this.tabs,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = AppColorsExtension.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
@@ -59,7 +75,9 @@ class AssetsPage extends HookConsumerWidget {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
-                  color: isSelected ? Colors.black : const Color(0xFF969696),
+                  color: isSelected
+                      ? colors.foregroundPrimary
+                      : colors.foregroundSecondary,
                 ),
               ),
             ),
@@ -68,18 +86,28 @@ class AssetsPage extends HookConsumerWidget {
       ),
     );
   }
+}
 
-  Widget _buildBalanceCard() {
+class AssetBalanceCard extends StatelessWidget {
+  const AssetBalanceCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint('AssetBalanceCard Rebuilding');
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(20),
       height: 165,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFFF4F8FF), Color(0xFFDAE9FF)],
+          colors: isDark
+              ? [const Color(0xFF226AD1), const Color(0xFF1A4A8F)]
+              : [const Color(0xFFF4F8FF), const Color(0xFFDAE9FF)],
         ),
       ),
       child: Stack(
@@ -92,6 +120,7 @@ class AssetsPage extends HookConsumerWidget {
               child: SvgPicture.network(
                 'http://localhost:3845/assets/9770158f34b9c1d4504d3ba37795721cc2366e63.svg',
                 width: 100,
+                placeholderBuilder: (context) => const SizedBox.shrink(),
               ),
             ),
           ),
@@ -102,43 +131,60 @@ class AssetsPage extends HookConsumerWidget {
                 children: [
                   Text(
                     'totalAssets'.tr(),
-                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDark ? Colors.white : Colors.black,
+                    ),
                   ),
                   const SizedBox(width: 4),
-                  const Icon(Icons.visibility, size: 14, color: Colors.black),
+                  Icon(
+                    Icons.visibility,
+                    size: 14,
+                    color: isDark ? Colors.white : Colors.black,
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 '\$78.69',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: isDark ? Colors.white : Colors.black,
                 ),
               ),
               const SizedBox(height: 4),
-              const Text.rich(
+              Text.rich(
                 TextSpan(
                   children: [
                     TextSpan(
                       text: '+\$8.02 ',
-                      style: TextStyle(color: Colors.black),
+                      style: TextStyle(
+                        color: isDark ? Colors.white70 : Colors.black54,
+                      ),
                     ),
-                    TextSpan(
+                    const TextSpan(
                       text: '(+0.23%)',
                       style: TextStyle(color: Color(0xFF2EBD85)),
                     ),
                   ],
                 ),
-                style: TextStyle(fontSize: 14),
+                style: const TextStyle(fontSize: 14),
               ),
               const Spacer(),
               Row(
                 children: [
-                  _buildBalanceInfo('availableBalance'.tr(), '\$14.38'),
+                  BalanceInfoItem(
+                    label: 'availableBalance'.tr(),
+                    value: '\$14.38',
+                    isDark: isDark,
+                  ),
                   const SizedBox(width: 40),
-                  _buildBalanceInfo('lockedBalance'.tr(), '\$1.00'),
+                  BalanceInfoItem(
+                    label: 'lockedBalance'.tr(),
+                    value: '\$1.00',
+                    isDark: isDark,
+                  ),
                 ],
               ),
             ],
@@ -147,75 +193,112 @@ class AssetsPage extends HookConsumerWidget {
       ),
     );
   }
+}
 
-  Widget _buildBalanceInfo(String label, String value) {
+class BalanceInfoItem extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool isDark;
+
+  const BalanceInfoItem({
+    super.key,
+    required this.label,
+    required this.value,
+    this.isDark = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: const TextStyle(fontSize: 12, color: Color(0xFF969696)),
+          style: TextStyle(
+            fontSize: 12,
+            color: isDark ? Colors.white70 : const Color(0xFF969696),
+          ),
         ),
         const SizedBox(height: 4),
         Text(
           value,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
-            color: Colors.black,
+            color: isDark ? Colors.white : Colors.black,
             fontWeight: FontWeight.w500,
           ),
         ),
       ],
     );
   }
+}
 
-  Widget _buildActionButtons(BuildContext context, int tabIndex) {
+class AssetActionButtons extends StatelessWidget {
+  final int tabIndex;
+
+  const AssetActionButtons({super.key, required this.tabIndex});
+
+  @override
+  Widget build(BuildContext context) {
     final isSpot = tabIndex == 0;
+
+    final colors = AppColorsExtension.of(context);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          _buildActionButton(
-            'transfer'.tr(),
-            const Color(0xFF226AD1),
-            Colors.white,
-            () => context.push('/transfer'),
+          AssetActionButton(
+            label: 'transfer'.tr(),
+            bgColor: const Color(0xFF226AD1),
+            textColor: Colors.white,
+            onTap: () => context.push('/transfer'),
           ),
           const SizedBox(width: 8),
           if (isSpot) ...[
-            _buildActionButton(
-              'deposit'.tr(),
-              const Color(0xFFF5F5F5),
-              Colors.black,
-              () {},
+            AssetActionButton(
+              label: 'deposit'.tr(),
+              bgColor: colors.inputFill,
+              textColor: Theme.of(context).colorScheme.onSurface,
+              onTap: () {},
             ),
             const SizedBox(width: 8),
-            _buildActionButton(
-              'withdraw'.tr(),
-              const Color(0xFFF5F5F5),
-              Colors.black,
-              () {},
+            AssetActionButton(
+              label: 'withdraw'.tr(),
+              bgColor: colors.inputFill,
+              textColor: Theme.of(context).colorScheme.onSurface,
+              onTap: () {},
             ),
           ] else ...[
-            _buildActionButton(
-              'transactionHistory'.tr(),
-              const Color(0xFFF5F5F5),
-              Colors.black,
-              () {},
+            AssetActionButton(
+              label: 'transactionHistory'.tr(),
+              bgColor: colors.inputFill,
+              textColor: Theme.of(context).colorScheme.onSurface,
+              onTap: () {},
             ),
           ],
         ],
       ),
     );
   }
+}
 
-  Widget _buildActionButton(
-    String label,
-    Color bgColor,
-    Color textColor,
-    VoidCallback onTap,
-  ) {
+class AssetActionButton extends StatelessWidget {
+  final String label;
+  final Color bgColor;
+  final Color textColor;
+  final VoidCallback onTap;
+
+  const AssetActionButton({
+    super.key,
+    required this.label,
+    required this.bgColor,
+    required this.textColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
@@ -239,8 +322,13 @@ class AssetsPage extends HookConsumerWidget {
       ),
     );
   }
+}
 
-  Widget _buildAssetListSection() {
+class AssetListSection extends StatelessWidget {
+  const AssetListSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -248,70 +336,93 @@ class AssetsPage extends HookConsumerWidget {
           padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
           child: Text(
             'assetsListTitle'.tr(),
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColorsExtension.of(context).foregroundPrimary,
+            ),
           ),
         ),
-        _buildAssetItem(
-          'BNB',
-          '0.00231BNB',
-          '\$4.95',
-          '+\$0.02',
-          true,
-          'http://localhost:3845/assets/9710f642c30bfabd63227c5bf22b47eb3cfdbb31.svg',
+        const AssetItem(
+          name: 'BNB',
+          balance: '0.00231BNB',
+          value: '\$4.95',
+          change: '+\$0.02',
+          isPositive: true,
+          iconUrl:
+              'http://localhost:3845/assets/9710f642c30bfabd63227c5bf22b47eb3cfdbb31.svg',
         ),
-        _buildAssetItem(
-          'Sui',
-          '0.00231SUI',
-          '\$4.95',
-          '+\$0.02',
-          false,
-          'http://localhost:3845/assets/68fda1b6e1085bbd4f82cdf1e95e4891e31792ec.svg',
+        const AssetItem(
+          name: 'Sui',
+          balance: '0.00231SUI',
+          value: '\$4.95',
+          change: '+\$0.02',
+          isPositive: false,
+          iconUrl:
+              'http://localhost:3845/assets/68fda1b6e1085bbd4f82cdf1e95e4891e31792ec.svg',
         ),
-        _buildAssetItem(
-          'Solana',
-          '0.00231SOL',
-          '\$4.95',
-          '+\$0.02',
-          false,
-          'http://localhost:3845/assets/e6b7c771b0e35c140c7e31550affbf97db0ad1c3.svg',
+        const AssetItem(
+          name: 'Solana',
+          balance: '0.00231SOL',
+          value: '\$4.95',
+          change: '+\$0.02',
+          isPositive: false,
+          iconUrl:
+              'http://localhost:3845/assets/e6b7c771b0e35c140c7e31550affbf97db0ad1c3.svg',
         ),
-        _buildAssetItem(
-          'BNB',
-          '0.00231BNB',
-          '\$4.95',
-          '+\$0.02',
-          true,
-          'http://localhost:3845/assets/9710f642c30bfabd63227c5bf22b47eb3cfdbb31.svg',
+        const AssetItem(
+          name: 'BNB',
+          balance: '0.00231BNB',
+          value: '\$4.95',
+          change: '+\$0.02',
+          isPositive: true,
+          iconUrl:
+              'http://localhost:3845/assets/9710f642c30bfabd63227c5bf22b47eb3cfdbb31.svg',
         ),
-        _buildAssetItem(
-          'Sui',
-          '0.00231SUI',
-          '\$4.95',
-          '+\$0.02',
-          false,
-          'http://localhost:3845/assets/68fda1b6e1085bbd4f82cdf1e95e4891e31792ec.svg',
+        const AssetItem(
+          name: 'Sui',
+          balance: '0.00231SUI',
+          value: '\$4.95',
+          change: '+\$0.02',
+          isPositive: false,
+          iconUrl:
+              'http://localhost:3845/assets/68fda1b6e1085bbd4f82cdf1e95e4891e31792ec.svg',
         ),
-        _buildAssetItem(
-          'Solana',
-          '0.00231SOL',
-          '\$4.95',
-          '+\$0.02',
-          false,
-          'http://localhost:3845/assets/e6b7c771b0e35c140c7e31550affbf97db0ad1c3.svg',
+        const AssetItem(
+          name: 'Solana',
+          balance: '0.00231SOL',
+          value: '\$4.95',
+          change: '+\$0.02',
+          isPositive: false,
+          iconUrl:
+              'http://localhost:3845/assets/e6b7c771b0e35c140c7e31550affbf97db0ad1c3.svg',
         ),
         const SizedBox(height: 20),
       ],
     );
   }
+}
 
-  Widget _buildAssetItem(
-    String name,
-    String balance,
-    String value,
-    String change,
-    bool isPositive,
-    String iconUrl,
-  ) {
+class AssetItem extends StatelessWidget {
+  final String name;
+  final String balance;
+  final String value;
+  final String change;
+  final bool isPositive;
+  final String iconUrl;
+
+  const AssetItem({
+    super.key,
+    required this.name,
+    required this.balance,
+    required this.value,
+    required this.change,
+    required this.isPositive,
+    required this.iconUrl,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -320,7 +431,16 @@ class AssetsPage extends HookConsumerWidget {
             width: 32,
             height: 32,
             decoration: const BoxDecoration(shape: BoxShape.circle),
-            child: SvgPicture.network(iconUrl),
+            child: SvgPicture.network(
+              iconUrl,
+              placeholderBuilder: (context) => Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.toll, size: 16, color: Colors.grey),
+              ),
+            ),
           ),
           const SizedBox(width: 8),
           Column(
@@ -328,15 +448,19 @@ class AssetsPage extends HookConsumerWidget {
             children: [
               Text(
                 name,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
+                  color: AppColorsExtension.of(context).foregroundPrimary,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
                 balance,
-                style: const TextStyle(fontSize: 12, color: Color(0xFF969696)),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColorsExtension.of(context).foregroundSecondary,
+                ),
               ),
             ],
           ),
@@ -346,9 +470,10 @@ class AssetsPage extends HookConsumerWidget {
             children: [
               Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
+                  color: AppColorsExtension.of(context).foregroundPrimary,
                 ),
               ),
               const SizedBox(height: 4),

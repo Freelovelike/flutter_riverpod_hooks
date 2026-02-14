@@ -30,7 +30,9 @@ class MainScaffold extends HookConsumerWidget {
         onTap: (index) =>
             ref.read(navigationControllerProvider.notifier).setIndex(index),
         selectedItemColor: const Color(0xFF226AD1),
-        unselectedItemColor: const Color(0xFF969696),
+        unselectedItemColor: Theme.of(context).brightness == Brightness.dark
+            ? const Color(0xFFB0B0B0)
+            : const Color(0xFF969696),
         selectedFontSize: 12,
         unselectedFontSize: 12,
         type: BottomNavigationBarType.fixed,
